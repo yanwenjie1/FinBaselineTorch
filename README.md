@@ -43,6 +43,10 @@ NLP 模型 Torch实现
     - gpt2
     - roformer
     - roformerV2
+ - 推荐的预训练模型
+    - chinese-albert-base-cluecorpussmall
+    - chinese-bert-base
+    - chinese-bert-wwm-ext
  # 参考资料
  - https://github.com/taishan1994
  - https://huggingface.co/docs/transformers
