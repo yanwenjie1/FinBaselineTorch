@@ -32,3 +32,16 @@ NLP 模型 Torch实现
   - pip install pynvml==11.4.1
   - pip install flask 
   - pip install gevent
+ # 备注
+ - 已测试支持的cuda版本：11.0-11.7
+ - 已测试支持的pytorch版本：1.7.0-1.13.0
+ - 已测试支持的预训练模型：
+    - bert
+    - albert
+    - electra
+    - roberta
+    - gpt2
+    - roformer
+    - roformerV2
+ # 参考资料
+ - https://github.com/taishan1994
