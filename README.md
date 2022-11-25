@@ -45,3 +45,4 @@ NLP 模型 Torch实现
     - roformerV2
  # 参考资料
  - https://github.com/taishan1994
+ - https://huggingface.co/docs/transformers
