@@ -2,8 +2,9 @@
 NLP 模型 Torch实现
 # 项目结构
 - **data**
-  - 数据集
+  - **数据集**
     - ***preprocess.py*** 构造输入
+    - ***train_data.txt*** 样本示例
 - **utils**
   - ***utils.py*** 工具箱
   - ***bert_base_model.py*** bert类预训练模型加载
