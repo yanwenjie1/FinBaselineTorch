@@ -15,3 +15,8 @@ NLP 模型 Torch实现
 - **train.py** 训练文件
 - **server.py** 接口文件
 - **test.py** 测试文件
+# 环境配置
+- step1 基础环境确认
+  - win+R 运行cmd 进入命令行界面
+  - 输入 nvidia-smi 查看显卡驱动是否支持11.3版本cuda （保证CUDA Version大于11.3即可）
+  - 
