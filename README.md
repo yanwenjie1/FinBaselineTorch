@@ -19,4 +19,6 @@ NLP 模型 Torch实现
 - step1 基础环境确认
   - win+R 运行cmd 进入命令行界面
   - 输入 nvidia-smi 查看显卡驱动是否支持11.3版本cuda （保证CUDA Version大于11.3即可）
-  - 
+  - win+R 运行cmd 进入命令行界面 输入conda info -e 确认anaconda/miniconda安装成功
+  - 建议配置conda源 参考 https://mirror.tuna.tsinghua.edu.cn/help/anaconda/
+  - 建议配置pip源   参考 https://mirrors.tuna.tsinghua.edu.cn/help/pypi/
