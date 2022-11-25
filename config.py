@@ -24,13 +24,13 @@ class Args:
         # chinese-electra-180g-base-discriminator
         # chinese-electra-180g-small-discriminator
         # chinese-nezha-base
-        parser.add_argument('--bert_dir', default='../model/chinese-bert-wwm-ext/',
+        parser.add_argument('--bert_dir', default='../model/chinese-albert-base-cluecorpussmall/',
                             help='pre train model dir for uer')
-        parser.add_argument('--model_name', type=str, default='bert_base',
+        parser.add_argument('--model_name', type=str, default='albert_base',
                             help='模型名字')
-        parser.add_argument('--data_dir', default='./data/esg/',
+        parser.add_argument('--data_dir', default='./data/fxjg/',
                             help='data dir for uer')
-        parser.add_argument('--data_name', type=str, default='esg',
+        parser.add_argument('--data_name', type=str, default='fxjg',
                             help='数据集名字')
 
         parser.add_argument('--output_dir', default='./checkpoints/',

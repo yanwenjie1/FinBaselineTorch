@@ -11,6 +11,7 @@ import json
 import os
 import torch
 import time
+import socket
 import numpy as np
 from flask import Flask, request
 from gevent import pywsgi
@@ -41,6 +42,13 @@ def test_torch():
     print('0卡地址:', torch.cuda.device(0))  # <torch.cuda.device object at 0x7fdfb60aa588>
     x = torch.rand(3, 2)
     print(x)  # 输出一个3 x 2 的tenor(张量)
+
+
+def get_ip_config():
+    # ip获取
+    addrs = socket.getaddrinfo(socket.gethostname(), None)
+    myip = [item[4][0] for item in addrs if ':' not in item[4][0]][0]
+    return myip
 
 
 def encode(text):
@@ -75,8 +83,8 @@ def decode(token_ids, attention_masks, token_type_ids, if_label=False):
 
 
 test_torch()
-model_name = 'albert_base_bilstm_crf_adver_seed1024_2022-10-23_yjyc'  # 24这个可以！ 27也可以 44亦可  64 ok
-data_path = './data/yjyc'
+model_name = 'albert_base_bilstm_crf_adver_seed1024_2022-11-23_fxjg'  # 24这个可以！ 27也可以 44亦可  64 ok
+data_path = './data/fxjg'
 
 # model_name = 'bert_base_bilstm_crf_adver_seed1024_2022-10-20_ktgg'
 # data_path = './data/ktgg'
@@ -109,15 +117,18 @@ def prediction():
         msg = msg.decode('utf-8')
         # print(msg)
         token_ids, attention_masks, token_type_ids = encode(msg)
-        if args.data_name == 'ktgg':
+        # 1: {'label': B-AAA, 'content': '我'}
+        # 2: ['我爱中国', 'label', start, end]
+        return_type = 2
+        if return_type == 1:
             entities = decode(token_ids, attention_masks, token_type_ids, True)  # False时返回实体
             # print(entities)
             entities = [{'label': j, 'content': msg[i]} for i, j in enumerate(entities)]
-        elif args.data_name == 'yjyc':
-            entities = decode(token_ids, attention_masks, token_type_ids, True)  # False时返回实体
-            entities = [{'label': j, 'content': msg[i]} for i, j in enumerate(entities)]
+        elif return_type == 2:
             entities = decode(token_ids, attention_masks, token_type_ids, False)  # False时返回实体
             entities = [[msg[item[1]:item[2]], item[0], item[1], item[2]] for item in entities]
+        else:
+            entities = []
         res = json.dumps(entities, ensure_ascii=False)
         return res
     except Exception as e:
@@ -127,9 +138,11 @@ def prediction():
 if __name__ == '__main__':
     # app.run(host='0.0.0.0', port=port, threaded=False, debug=True)
     server = pywsgi.WSGIServer(('0.0.0.0', port), app)
+    print("Starting server in python...")
+    print('Service Address : http://' + get_ip_config() + ':' + str(port))
     server.serve_forever()
+    print("done!")
     # app.run(host=hostname, port=port, debug=debug)  注释以前的代码
     # manager.run()  # 非开发者模式
-    print("Starting server in python...")
-    print("done!")
+
 

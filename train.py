@@ -269,5 +269,57 @@ if __name__ == '__main__':
         bertForClassify.test(model_path)
         logger.info(raw_text)
         bertForClassify.predict(raw_text, model_path)
+    if args.data_name == "fxjg":
+        args.max_seq_len = 512
+        args.train_batch_size = args.eval_batch_size = 16
+        # args.crf_lr = 2e-5
+        args.num_layers = 2
+        args.train_epochs = 100
+        data_path = args.data_dir
+
+        # 超参设置到此为止
+        with open(os.path.join(data_path, 'labels.json'), 'r', encoding='utf-8') as f:
+            label_list = json.load(f)
+        label2id = {}
+        id2label = {}
+        for k, v in enumerate(label_list):
+            label2id[v] = k
+            id2label[k] = v
+        args.num_tags = len(label_list)
+        logger.info(args)
+        with open(os.path.join(data_path, 'train_data.pkl'), 'rb') as f:
+            train_features = pickle.load(f)
+        train_dataset = NerDataset(train_features)
+        train_sampler = SequentialSampler(train_dataset)
+        train_loader = DataLoader(dataset=train_dataset,
+                                  batch_size=args.train_batch_size,
+                                  sampler=train_sampler,
+                                  num_workers=0)
+        with open(os.path.join(data_path, 'dev_data.pkl'), 'rb') as f:
+            dev_features = pickle.load(f)
+        dev_dataset = NerDataset(dev_features)
+        dev_sampler = SequentialSampler(dev_dataset)
+        dev_loader = DataLoader(dataset=dev_dataset,
+                                batch_size=args.eval_batch_size,
+                                sampler=dev_sampler,
+                                num_workers=0)
+
+        save_json('./checkpoints/{}_{}/'.format(args.model_name, args.data_name), vars(args), 'args')
+        bertForNer = BertForNer(args, train_loader, dev_loader, id2label)
+        bertForNer.train()
+
+        model_path = './checkpoints/{}_{}/model_best.pt'.format(args.model_name, args.data_name)
+        bertForNer.test(model_path)
+
+        raw_text = '二、本期债务融资工具主要条款：1、债务融资工具全称：三一集团有限公司2022年度第十四期@@超短期融资券（科创票据）@@2、计划' \
+                   '发行规模：人民币壹拾亿元@@3、期限：65天@@4、债券面值：人民币100元@@5、发行日：2022年10月17日@@6、分销日：2022年10' \
+                   '月18日@@7、缴款日：2022年10月18日@@8、上市日：2022年10月19日@@9、兑付日：2022年12月22日（如遇法定节假日或休息日，' \
+                   '则顺延至其后的第1个工作日，顺延期间不另计息）。@@10、付息日：2022年12月22日（如遇法定节假日或休息日，则顺延至其后的第' \
+                   '1个工作日，顺延期间不另计息）。@@11、本期债务融资工具的销售佣金费率(%/年化)不低于0%。@@12、债券评级：中诚信国际信用评' \
+                   '级有限责任公司给予发行方的主体评级为AAA，债项评级为\。@@13、登记托管形式：本期债务融资工具采用实名制记账式，在银行间市' \
+                   '场清算所股份有限公司（以下简称“上海清算所”）统一托管。@@14、付息及兑付方式：本期债务融资工具的利息支付及到期兑付事宜按' \
+                   '托管机构的有关规定执行，由登记托管机构代理完成利息支付及本金兑付工作。@@'
+        logger.info(raw_text)
+        bertForNer.predict(raw_text, model_path)
 
 
