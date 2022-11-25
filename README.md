@@ -18,6 +18,7 @@ NLP 模型 Torch实现
 # 环境配置
 - step1 基础环境确认
   - win+R 运行cmd 进入命令行界面
+  - 确认机器有nvidia显卡
   - 输入 nvidia-smi 查看显卡驱动是否支持11.3版本cuda （保证CUDA Version大于11.3即可）
   - win+R 运行cmd 进入命令行界面 输入conda info -e 确认anaconda/miniconda安装成功
   - 建议配置conda源 参考 https://mirror.tuna.tsinghua.edu.cn/help/anaconda/
@@ -25,8 +26,10 @@ NLP 模型 Torch实现
 - step2 构建模型环境
   - 运行 conda create -n yourname python=3.10.0
   - conda activate yourname / source activate yourname
-  - conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.3 -c pytorch 参考 https://pytorch.org/get-started/previous-versions/
-  - conda install scikit-learn  最终会安装好scikit-learn==1.1.3
+  - 执行下面的命令安装torch环境 参考 https://pytorch.org/get-started/previous-versions/
+  - conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.3 -c pytorch 
+  - 执行下面的命令安装机器学习库scikit-learn==1.1.3
+  - conda install scikit-learn  
   - conda install transformers==4.18.0
   - pip install pytorch-crf==0.7.2
   - pip install pynvml==11.4.1
