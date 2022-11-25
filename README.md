@@ -22,6 +22,7 @@ NLP 模型 Torch实现
   - win+R 运行cmd 进入命令行界面 输入conda info -e 确认anaconda/miniconda安装成功
   - 建议配置conda源 参考 https://mirror.tuna.tsinghua.edu.cn/help/anaconda/
   - 建议配置pip源   参考 https://mirrors.tuna.tsinghua.edu.cn/help/pypi/
+- step2 构建模型环境
   - 运行 conda create -n yourname python=3.10.0
   - conda activate yourname / source activate yourname
   - conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.3 -c pytorch 参考 https://pytorch.org/get-started/previous-versions/
