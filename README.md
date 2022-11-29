@@ -57,3 +57,6 @@ NLP 模型 Torch实现
  # 参考资料
  - https://github.com/taishan1994
  - https://huggingface.co/docs/transformers
+
+ # 更新日志
+ - 2022-11-29：优化了服务端，允许接受batch输入
