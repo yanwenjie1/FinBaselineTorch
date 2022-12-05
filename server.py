@@ -7,6 +7,7 @@
 @Function: XX
 @Other: XX
 """
+import copy
 import json
 import os
 import torch
@@ -126,14 +127,12 @@ def decode_batch(token_ids, attention_masks, token_type_ids, if_label=False):
     # 批量输入的时候 就不能只取1了
     results = []
     for y_pre in output:
-        aaaaaa = [id2label[i] for i in y_pre]
-        aaaaaa = aaaaaa[1:-1]
         results.append(get_entity([id2label[i] for i in y_pre][1:-1]))
     return results
 
 
 test_torch()
-model_name = 'albert_base_bilstm_crf_adver_seed1024_2022-11-26_fxjg'  # 24这个可以！ 27也可以 44亦可  64 ok
+model_name = 'albert_base_bilstm_crf_adver_seed1024_2022-11-29_fxjg'  # 24这个可以！ 27也可以 44亦可  64 ok
 data_path = './data/fxjg'
 
 # model_name = 'bert_base_bilstm_crf_adver_seed1024_2022-10-20_ktgg'
@@ -161,7 +160,7 @@ app = Flask(__name__)
 # manager = Manager(app)
 
 
-@app.route('/prediction/', methods=['POST'])
+@app.route('/prediction', methods=['POST'])
 def prediction():
     # noinspection PyBroadException
     try:
@@ -171,7 +170,8 @@ def prediction():
         token_ids, attention_masks, token_type_ids = encode(msg)
         # 1: {'label': B-AAA, 'content': '我'}
         # 2: ['我爱中国', 'label', start, end]
-        return_type = 2
+        # 3: ['B','I','O']
+        return_type = 3
         if return_type == 1:
             entities = decode(token_ids, attention_masks, token_type_ids, True)  # False时返回实体
             # print(entities)
@@ -179,6 +179,8 @@ def prediction():
         elif return_type == 2:
             entities = decode(token_ids, attention_masks, token_type_ids, False)  # False时返回实体
             entities = [[msg[item[1]:item[2]], item[0], item[1], item[2]] for item in entities]
+        elif return_type == 3:
+            entities = decode(token_ids, attention_masks, token_type_ids, True)  # False时返回实体
         else:
             entities = []
         res = json.dumps(entities, ensure_ascii=False)
@@ -187,21 +189,27 @@ def prediction():
         return str(e)
 
 
-@app.route('/prediction_batch/', methods=['POST'])
+@app.route('/prediction_batch', methods=['POST'])
 def prediction_batch():
     # noinspection PyBroadException
     try:
-        msg = request.get_data()
-        msg = msg.decode('utf-8')
+        msgs = request.get_data()
+        msgs = msgs.decode('utf-8')
         # print(msg)
-        msg = json.loads(msg)
-        token_ids, attention_masks, token_type_ids = encode_batch(msg)
-        entities = decode_batch(token_ids, attention_masks, token_type_ids, False)  # False时返回实体
+        msgs = json.loads(msgs)
         results = []
-        for i, items in enumerate(entities):
-            results.append([[msg[i][item[1]:item[2]], item[0], item[1], item[2]] for item in items])
+        count = 10  # 控制小batch推理
+        for index in range(len(msgs) // count + 1):
 
+            msg = msgs[index * count: index * count + count]
+            if len(msg) == 0:
+                continue
+            token_ids, attention_masks, token_type_ids = encode_batch(msg)
+            entities = decode_batch(token_ids, attention_masks, token_type_ids, False)  # False时返回实体
+            for i, items in enumerate(entities):
+                results.append([[msg[i][item[1]:item[2]], item[0], item[1], item[2]] for item in items])
         res = json.dumps(results, ensure_ascii=False)
+        torch.cuda.empty_cache()
         return res
     except Exception as e:
         return str(e)
